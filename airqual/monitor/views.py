@@ -8,6 +8,7 @@ def index(request):
     return HttpResponse("index")
 
 def addDataPoint(request):
+    #very secure
     api_key = request.GET.get('api_key')
     if (api_key != 'complicatedstring'):
         return HttpResponse("Invalid API key")
@@ -19,7 +20,6 @@ def addDataPoint(request):
     
     #construct the datapoint
     val = request.GET.get('value')
-    datapoint = DataPoint(value = val, timestamp = timezone.now(), sensor=sensor_id_arg)
-    datapoint.save()
+    sensor_object.data.create(value=val, timestamp=timezone.now())
     
     return HttpResponse("added data point")
