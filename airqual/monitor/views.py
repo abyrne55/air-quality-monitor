@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from django.utils import timezone
 from .models import DataPoint, Sensor
+from django.contrib.auth.forms import UserCreationForm
 # Create your views here.
 
 def index(request):
@@ -24,6 +25,3 @@ def addDataPoint(request):
     
     return HttpResponse("added data point")
 
-def login(request):
-    # Renders the login screen
-    return render(request, 'monitor/login.html')
