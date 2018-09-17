@@ -5,7 +5,7 @@ from .models import DataPoint, Sensor
 # Create your views here.
 
 def index(request):
-    return HttpResponse("index")
+    return render(request, 'monitor/index.html')
 
 def addDataPoint(request):
     #very secure
@@ -23,3 +23,7 @@ def addDataPoint(request):
     sensor_object.data.create(value=val, timestamp=timezone.now())
     
     return HttpResponse("added data point")
+
+def login(request):
+    # Renders the login screen
+    return render(request, 'monitor/login.html')
