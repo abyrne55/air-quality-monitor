@@ -1,6 +1,8 @@
 {% include 'monitor/header.html' %}
 
 <main role="main" class="container">
+  <h1>Registration</h1>
+  <p class="lead">Thank you for your interest in AirQual! Please fill out the form below to create your account</p>
   <form method="post">
     {% csrf_token %}
     {{ form.non_field_errors }}

@@ -21,7 +21,7 @@ def sensor_data(request, sensor_id):
                                                                 'datapoints' : datapoints,
                                                                 'api_key' : api_key})
 @login_required
-def add_sensor(request):
+def new_sensor(request):
     SensorForm = modelform_factory(Sensor,
         fields=("name", "unit", "min_value", "max_value", "owner"),
         widgets={"owner": HiddenInput()})
@@ -38,7 +38,7 @@ def add_sensor(request):
     else:
         sensor_form = SensorForm()
 
-    return render(request, 'monitor/add_sensor.html', {'form': sensor_form})
+    return render(request, 'monitor/new_sensor.html', {'form': sensor_form})
 
 
 
