@@ -1,0 +1,59 @@
+{% include 'monitor/header.html' %}
+
+<main role="main" class="container">
+  <h1>{{ sensor.name }}</h1>
+  <small class="text-muted">API Key: {{ api_key }}</small>
+
+  {% if sensor.malfunction %}
+  <div class="alert alert-warning" role="alert">
+    This sensor recently reported a value outside of its normal operating range, which may indicate a malfunction. Please check the sensor.
+  </div>
+  {% endif %}
+
+  <div class="row">
+    <div class="col-10">
+      <canvas id="sensorChart" height="100"></canvas>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <h4>Latest Data</h4>
+      <ul>
+    	{% for datapoint in datapoints %}
+        <li>{{ datapoint.value }} @ {{ datapoint.timestamp }}</li>
+    	{% empty %}
+        <li>No data associated with this sensor</li>
+    	{% endfor %}
+    	</ul>
+    </div>
+  </div>
+
+
+
+</main>
+
+<!-- Chart.js Code-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
+<script>
+var ctx = document.getElementById("sensorChart").getContext('2d');
+var sensorChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: [{% for dp in datapoints %} "{{ dp.timestamp }}", {% endfor %}],
+        datasets: [{
+            label: '{{ sensor.name }} ({{ sensor.unit }})',
+            data: [{% for dp in datapoints %} {{ dp.value }}, {% endfor %}],
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                }
+            }]
+        }
+    }
+});
+</script>
+
+{% include 'monitor/footer.html' %}

@@ -22,10 +22,15 @@ class Sensor(models.Model):
     api_key = models.UUIDField(default=uuid.uuid4, editable=False)
 
     # All DataPoints related to this sensor
-    data = models.ManyToManyField(DataPoint)
+    data = models.ManyToManyField(DataPoint, blank=True)
 
     # Unit of data collected by this sensor (shown in UI)
     unit = models.CharField(max_length=10, default="°C")
 
+    # Sanity checks: posted values must be inside this range to avoid triggering a warning
+    min_value = models.DecimalField(max_digits=6, decimal_places=2)
+    max_value = models.DecimalField(max_digits=6, decimal_places=2)
+    malfunction = models.BooleanField(default=False) # toggled if value posted out of bounds
+
     def __str__(self):
-        return self.sensor_id
+        return self.name

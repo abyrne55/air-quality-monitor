@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.utils import timezone
+from django.forms import modelform_factory, HiddenInput
 from .models import DataPoint, Sensor
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
@@ -8,7 +9,38 @@ from django.contrib.auth.decorators import login_required
 
 @login_required
 def index(request):
-    return render(request, 'monitor/index.html')
+    sensors = request.user.sensor_set.all()
+    return render(request, 'monitor/index.html', context={'sensor_list' : sensors})
+
+@login_required
+def sensor_data(request, sensor_id):
+    sensor = get_object_or_404(Sensor, id=sensor_id)
+    datapoints = sensor.data.all()
+    api_key = str(sensor.api_key)
+    return render(request, 'monitor/view_sensor.html', context={'sensor' : sensor,
+                                                                'datapoints' : datapoints,
+                                                                'api_key' : api_key})
+@login_required
+def add_sensor(request):
+    SensorForm = modelform_factory(Sensor,
+        fields=("name", "unit", "min_value", "max_value", "owner"),
+        widgets={"owner": HiddenInput()})
+    if request.method == 'POST':
+        # Have to do a wierd hack here to set owner data
+        post_data = request.POST.copy()
+        post_data['owner'] = request.user.id
+        sensor_form = SensorForm(post_data)
+        if sensor_form.is_valid():
+            s = sensor_form.save()
+            s.owner = request.user
+            s.save()
+            return redirect('/monitor/view/' + str(s.id))
+    else:
+        sensor_form = SensorForm()
+
+    return render(request, 'monitor/add_sensor.html', {'form': sensor_form})
+
+
 
 def register(request):
     if request.method == 'POST':
@@ -20,9 +52,9 @@ def register(request):
             u.save()
             return redirect('login')
     else:
-        f = UserCreationForm()
+        user_form = UserCreationForm()
 
-    return render(request, 'registration/register.html', {'form': f})
+    return render(request, 'registration/register.html', {'form': user_form})
 
 def add_data_point(request, sensor_id):
     """
@@ -30,18 +62,23 @@ def add_data_point(request, sensor_id):
     """
     # Validate request has necessary fields
     if "api_key" not in request.GET or "value" not in request.GET or sensor_id is None:
-        return HttpResponse(status_code=400) # 400 Bad Request
+        return HttpResponse(status=400) # 400 Bad Request
 
     # Get params
     api_key = request.GET.get('api_key')
-    sensor = get_object_or_404(Sensor, id=request.GET.get('sensor_id'))
+    sensor = get_object_or_404(Sensor, id=sensor_id)
 
     # Check API key
     if api_key != str(sensor.api_key):
-        return HttpResponse(status_code=403) # 403 Forbidden
+        return HttpResponse(status=403) # 403 Forbidden
 
     # Now that we know request is valid, construct the datapoint
-    sensor.data.create(value=request.GET.get('value'))
+    datapoint = sensor.data.create(value=request.GET.get('value'))
+
+    # And check if that value was 'sane' (i.e. not a bad sensor)
+    if float(datapoint.value) < sensor.min_value or float(datapoint.value) > sensor.max_value:
+        sensor.malfunction = True
+        sensor.save()
 
     # Return a successful response code
-    return HttpResponse(status_code=201) # 201 Created
+    return HttpResponse(status=201) # 201 Created
