@@ -25,7 +25,7 @@ SECRET_KEY = 'hah_7ilmhg^vjzswcc%7&p5zy*#6g77_44xvm+kjk7x)(n-)!c'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', ".burpg.space"]
 
 
 # Application definition
