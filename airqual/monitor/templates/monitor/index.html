@@ -1,15 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Index</title>
-</head>
-<body>
-	<h1>Index page!</h1>
-	{% if user.is_authenticated %}
-	<h2>Your name is: {{ user.username }}</h2>
-	{% else %}
-	<h2>You are not logged in</h2>
-	{% endif %}
-</body>
-</html>
+{% include 'monitor/header.html' %}
+
+<main role="main" class="container">
+  <h1>Welcome, {{ user.first_name }}!</h1>
+	<p class="lead">You are viewing all of the sensors in the {{ user.last_name }} household</p>
+</main>
+
+{% include 'monitor/footer.html' %}

@@ -6,6 +6,6 @@ app_name = 'monitor'
 urlpatterns = [
     # ex: /monitor/
     path('', views.index, name='index'),
-    # ex: /monitor/adddatapoint + params
-    path('adddatapoint/', views.addDataPoint, name='addDataPoint'),
+    # ex: /monitor/add/54
+    path('add/<int:sensor_id>/', views.add_data_point, name='add_data_point'),
 ]
