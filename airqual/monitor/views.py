@@ -10,22 +10,39 @@ from datetime import datetime, timedelta
 
 @login_required
 def index(request):
+    """
+    Shows a list of sensors
+    """
     sensors = request.user.sensor_set.all()
     return render(request, 'monitor/index.html', context={'sensor_list' : sensors})
 
 @login_required
 def sensor_data(request, sensor_id):
+    """
+    Shows detailed data from the sensor
+    """
     sensor = get_object_or_404(Sensor, id=sensor_id)
+
+    # Clear Malfunction Warning
+    if 'clear_warning' in request.GET and int(request.GET['clear_warning']) == 1:
+        sensor.malfunction = False
+        sensor.save()
+
+    # Get datapoints (from the last week)
     time_threshold = datetime.now() - timedelta(weeks=1)
     datapoints = sensor.data.filter(timestamp__gt=time_threshold)
     dp_short = datapoints.order_by('-timestamp') if datapoints.count() < 5 else datapoints.order_by('-timestamp')[:5]
     api_key = str(sensor.api_key)
+
     return render(request, 'monitor/view_sensor.html', context={'sensor' : sensor,
                                                                 'datapoints' : datapoints,
                                                                 'dp_short' : dp_short,
                                                                 'api_key' : api_key})
 @login_required
 def new_sensor(request):
+    """
+    Allows for adding a new sensor
+    """
     SensorForm = modelform_factory(Sensor,
         fields=("name", "unit", "min_value", "max_value", "owner"),
         widgets={"owner": HiddenInput()})
@@ -46,6 +63,9 @@ def new_sensor(request):
 
 @login_required
 def del_sensor(request, sensor_id):
+    """
+    Deletes a sensor
+    """
     sensor = get_object_or_404(Sensor, id=sensor_id)
     sensor_name = sensor.name
     if sensor.owner == request.user:
@@ -56,8 +76,10 @@ def del_sensor(request, sensor_id):
     return render(request, 'monitor/del_sensor.html', {'name': sensor_name})
 
 
-
 def register(request):
+    """
+    Allows for creating new users
+    """
     if request.method == 'POST':
         user_form = UserCreationForm(request.POST)
         if user_form.is_valid():
@@ -70,6 +92,7 @@ def register(request):
         user_form = UserCreationForm()
 
     return render(request, 'registration/register.html', {'form': user_form})
+
 
 def add_data_point(request, sensor_id):
     """

@@ -6,7 +6,7 @@
 
   {% if sensor.malfunction %}
   <div class="alert alert-warning" role="alert">
-    This sensor recently reported a value outside of its normal operating range, which may indicate a malfunction. Please check the sensor.
+    This sensor reported a value outside of its normal range, which may indicate a malfunction. Check the sensor, then <a href="?clear_warning=1" class="alert-link">click here</a> to dismiss.
   </div>
   {% endif %}
 
