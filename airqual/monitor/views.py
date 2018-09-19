@@ -40,6 +40,17 @@ def new_sensor(request):
 
     return render(request, 'monitor/new_sensor.html', {'form': sensor_form})
 
+@login_required
+def del_sensor(request, sensor_id):
+    sensor = get_object_or_404(Sensor, id=sensor_id)
+    sensor_name = sensor.name
+    if sensor.owner == request.user:
+        sensor.delete()
+    else:
+        return HttpResponse(status=403) # 403 Forbidden
+
+    return render(request, 'monitor/del_sensor.html', {'name': sensor_name})
+
 
 
 def register(request):

@@ -27,10 +27,28 @@
     	</ul>
     </div>
   </div>
-
-
+  <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delModal">
+    Delete Sensor
+  </button>
 
 </main>
+
+<div class="modal fade" id="delModal" tabindex="-1" role="dialog" aria-labelledby="delModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="delModalLabel">Are you sure?</h5>
+      </div>
+      <div class="modal-body">
+        Deleting this sensor will also irreversibly delete all of its past data.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <a class="btn btn-danger" href="/monitor/del/{{ sensor.id }}/">Delete</a>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Chart.js Code-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
