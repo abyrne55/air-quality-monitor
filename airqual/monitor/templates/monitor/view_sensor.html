@@ -20,7 +20,7 @@
       <h4>Latest Data</h4>
       <ul>
     	{% for datapoint in dp_short %}
-        <li>{{ datapoint.value }} @ {{ datapoint.timestamp }}</li>
+        <li>{{ datapoint.value }} {{ sensor.unit }} @ {{ datapoint.timestamp }}</li>
     	{% empty %}
         <li>No data associated with this sensor</li>
     	{% endfor %}
