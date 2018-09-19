@@ -1,0 +1,19 @@
+{% include 'monitor/header.html' %}
+
+<main role="main" class="container">
+  <h1>Welcome, {{ user.first_name }}!</h1>
+	<p class="lead">You are viewing all of the sensors in the {{ user.last_name }} household</p>
+
+	<ul>
+	{% for sensor in sensor_list %}
+    <li><a href="/monitor/view/{{ sensor.id }}">{{ sensor.name }}</a></li>
+	{% empty %}
+    <li>No sensors associated with you</li>
+	{% endfor %}
+	</ul>
+
+	<a class="btn btn-primary" href="/monitor/new" role="button">Add New Sensor</a>
+
+</main>
+
+{% include 'monitor/footer.html' %}
