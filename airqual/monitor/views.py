@@ -5,6 +5,7 @@ from django.forms import modelform_factory, HiddenInput
 from .models import DataPoint, Sensor
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
+from datetime import datetime, timedelta
 # Create your views here.
 
 @login_required
@@ -15,10 +16,13 @@ def index(request):
 @login_required
 def sensor_data(request, sensor_id):
     sensor = get_object_or_404(Sensor, id=sensor_id)
-    datapoints = sensor.data.all()
+    time_threshold = datetime.now() - timedelta(weeks=1)
+    datapoints = sensor.data.filter(timestamp__gt=time_threshold)
+    dp_short = datapoints.order_by('-timestamp') if datapoints.count() < 5 else datapoints.order_by('-timestamp')[:5]
     api_key = str(sensor.api_key)
     return render(request, 'monitor/view_sensor.html', context={'sensor' : sensor,
                                                                 'datapoints' : datapoints,
+                                                                'dp_short' : dp_short,
                                                                 'api_key' : api_key})
 @login_required
 def new_sensor(request):
